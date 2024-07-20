@@ -15,7 +15,7 @@ const IGNORED_TAGS = new Set([
     'style',
     'template'
 ]);
-const HTML = `<div part="${EditableListPart.Items}"><slot part="${EditableListPart.ItemsSlot} ></slot></div>
+const HTML = `<div part="${EditableListPart.Items}"><slot part="${EditableListPart.ItemsSlot}"></slot></div>
 <slot name="add"><button part="${EditableListPart.AddButton}" type="button">&plus;</button></slot>`;
 const STYLE = `
 * { box-sizing: border-box; }
