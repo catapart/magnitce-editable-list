@@ -1,5 +1,11 @@
 # @magnit-ce/editable-list
 
+## 0.0.2
+
+### Patch Changes
+
+- 0416d41: added demo link
+
 ## 0.0.1
 
 ### Patch Changes
