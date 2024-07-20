@@ -29,6 +29,9 @@ Package size: ~5kb minified, ~9kb verbose.
 <script type="module" src="/path/to/editable-list[.min].js"></script>
 ```
 
+## Demo
+https://catapart.github.io/magnitce-editable-list/demo/
+
 ## Support
 - Firefox
 - Chrome
@@ -224,8 +227,6 @@ To select them, the standard attribute selector (ex: `[part="remove"]`) can be u
     }
 </style>
 ```
-
-## Demo
 
 ## License
 This library is in the public domain. You do not need permission, nor do you need to provide attribution, in order to use, modify, reproduce, publish, or sell it or any works using it or derived from it.
