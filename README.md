@@ -3,6 +3,8 @@ A custom html element that adds a remove button to its children and removes the 
 
 Also includes options for using edit buttons instead of, or in addition to, remove button.
 
+Package size: ~5kb minified, ~9kb verbose.
+
 ## Quick Reference
 
 #### Default
