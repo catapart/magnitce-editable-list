@@ -1,6 +1,6 @@
 {
   "name": "@magnit-ce/editable-list",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A custom html element that adds a remove button to its children and removes the child when the button is pressed",
   "main": "editable-list.ts",
   "module": "dist/editable-list.mjs",
@@ -12,7 +12,15 @@
     "package": "tsup editable-list.ts --format cjs,esm --dts --clean && tsc --outDir ./vanilla && minify ./vanilla/editable-list.js > ./vanilla/editable-list.min.js",
     "release": "tsup editable-list.ts --format cjs,esm --dts && tsc --outDir ./vanilla && minify ./vanilla/editable-list.js > ./vanilla/editable-list.min.js && changeset publish"
   },
-  "keywords": ["custom", "element", "html", "browser", "component", "list", "edit"],
+  "keywords": [
+    "custom",
+    "element",
+    "html",
+    "browser",
+    "component",
+    "list",
+    "edit"
+  ],
   "author": "catapart",
   "license": "CC0-1.0",
   "repository": {
