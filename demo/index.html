@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Custom Element Demo</title>
+  </head>
+  <body>
+    <header>Default</header>
+    <editable-list>
+        <li>A</li>
+        <li>B</li>
+        <li>C</li>
+        <li>D</li>
+    </editable-list>
+
+    <header>Hide Remove Button</header>
+    <editable-list remove="false">
+        <li>A</li>
+        <li>B</li>
+        <li>C</li>
+        <li>D</li>
+    </editable-list>
+
+    <header>Include Edit Button</header>
+    <editable-list edit="true">
+        <li>A</li>
+        <li>B</li>
+        <li>C</li>
+        <li>D</li>
+    </editable-list>
+
+    <header>Replace Remove Button with Edit Button</header>
+    <editable-list remove="false" edit="true">
+        <li>A</li>
+        <li>B</li>
+        <li>C</li>
+        <li>D</li>
+    </editable-list>
+
+    <header>Custom Add Button Template</header>
+    <editable-list>
+        <li>A</li>
+        <li>B</li>
+        <li>C</li>
+        <li>D</li>
+        <button type="button" slot="add">Add</button>
+    </editable-list>
+
+    <header>Custom Remove/Edit Button Template</header>
+    <editable-list edit="true">
+        <li>A</li>
+        <li>B</li>
+        <li>C</li>
+        <li>D</li>
+        <template part="remove-button">Close</template>
+        <template part="edit-button">Browse</template>
+    </editable-list>
+
+    
+
+    <header>Styled</header>
+    <editable-list class="styled" edit="true">
+        <li>A</li>
+        <li>B</li>
+        <li>C</li>
+        <li>D</li>
+    </editable-list>
+    <style>
+        .styled
+        {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            
+            display: flex;
+            flex-direction: column;
+        }
+        .styled::part(items)
+        {
+            background-color: #444;
+            color: #999;
+            display: flex;
+            flex-direction: column;
+        }
+        .styled::part(add)
+        {
+            background-color: green;
+            color: white;
+        }
+        .styled [part="edit"]
+        {
+            background-color: blue;
+            color: white;
+        }
+        .styled [part="remove"]
+        {
+            background-color: red;
+            color: white;
+        }
+    </style>
+    <script type="module" src="/vanilla/editable-list.js"></script>
+  </body>
+</html>
