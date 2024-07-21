@@ -64,7 +64,6 @@ export class EditableListElement extends HTMLElement
     canRemove: boolean = true;
     /** if `true`, allows the edit button to be added and the edit event to be dispatched */
     canEdit: boolean = false;
-    // hasButtonsWithoutHandlers: boolean = false;
 
     #boundEventHandlers: Map<string, (event?:Event) => void> = new Map([
         ['add', this.#addButton_onClick.bind(this)]
@@ -195,19 +194,19 @@ export class EditableListElement extends HTMLElement
                     });
                     item.appendChild(editButton);
                 }
-                // else if(this.hasButtonsWithoutHandlers)
-                // {
-                //     existingEditButton.addEventListener('click', (event: Event) =>
-                //     { 
-                //         this.dispatchEvent(new CustomEvent('edit', { detail: item }));
-                //         if(this.hasAttribute('cancel-edit'))
-                //         {
-                //             event.preventDefault();
-                //             event.stopPropagation();
-                //             return false;
-                //         }
-                //     });
-                // }
+                else
+                {
+                    existingEditButton.addEventListener('click', (event: Event) =>
+                    { 
+                        this.dispatchEvent(new CustomEvent('edit', { detail: item }));
+                        if(this.hasAttribute('cancel-edit'))
+                        {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            return false;
+                        }
+                    });
+                }
             }
             else if(existingEditButton != null)
             {
@@ -244,20 +243,20 @@ export class EditableListElement extends HTMLElement
                     });
                     item.appendChild(removeButton);
                 }
-                // else if(this.hasButtonsWithoutHandlers)
-                // {
-                //     existingRemoveButton.addEventListener('click', (event: Event) =>
-                //     { 
-                //         item.remove();
-                //         this.dispatchEvent(new CustomEvent('remove', { detail: item }));
-                //         if(this.hasAttribute('cancel-remove'))
-                //         {
-                //             event.preventDefault();
-                //             event.stopPropagation();
-                //             return false;
-                //         }
-                //     });
-                // }
+                else
+                {
+                    existingRemoveButton.addEventListener('click', (event: Event) =>
+                    { 
+                        item.remove();
+                        this.dispatchEvent(new CustomEvent('remove', { detail: item }));
+                        if(this.hasAttribute('cancel-remove'))
+                        {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            return false;
+                        }
+                    });
+                }
             }
             else if(existingRemoveButton != null)
             {
