@@ -1,5 +1,11 @@
 # @magnit-ce/editable-list
 
+## 0.0.6
+
+### Patch Changes
+
+- c13f19b: removed unnecessary register function
+
 ## 0.0.5
 
 ### Patch Changes
