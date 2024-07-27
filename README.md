@@ -66,8 +66,9 @@ import { EditableList } from "/path/to/editable-list[.min].js";
 ```
 #### npm
 ```js
-import { register, EditableList } from "@magnit-ce/editable-list";
-register(); // with npm, direct imports can cause issues with bundlers. To prevent direct imports, just use the register function 
+import "@magnit-ce/editable-list"; // if you didn't reference from a <script>, reference with an import like this
+
+import { EditableList } from "@magnit-ce/editable-list";
 ```
 
 ### Add Items
