@@ -32,6 +32,8 @@ Package size: ~5kb minified, ~9kb verbose.
 ## Demo
 https://catapart.github.io/magnitce-editable-list/demo/
 
+To run the demo, yourself, run the `package` script (`npm run pacakge`) before serving the demo index page.
+
 ## Support
 - Firefox
 - Chrome
