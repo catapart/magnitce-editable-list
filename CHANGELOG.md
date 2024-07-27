@@ -1,5 +1,11 @@
 # @magnit-ce/editable-list
 
+## 0.0.5
+
+### Patch Changes
+
+- 6a3f801: added a register function and exported it for npm convenience
+
 ## 0.0.4
 
 ### Patch Changes
