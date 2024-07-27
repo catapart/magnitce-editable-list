@@ -304,24 +304,7 @@ export class EditableListElement extends HTMLElement
         }
     }
 }
-
-/**
- * Registers the element with the current DOM.  
- * 
- * If editable-list was included as a `<script>` tag, or was directly imported (`import 'editable-list';`),
- * you **do not** need to call this function. It will have been auto-called from
- * the tag or import statement.
- *
- * If you have loaded editable-list from `npm` this function is a convenient way to register the element
- * that prevents bundlers from having to use raw import functionality.
- * @example import { register } from 'editable-list';  
- * register();
- */
-export function register()
+if(customElements.get(COMPONENT_TAG_NAME) == null)
 {
-    if(customElements.get(COMPONENT_TAG_NAME) == null)
-    {
-        customElements.define(COMPONENT_TAG_NAME, EditableListElement);
-    }
+    customElements.define(COMPONENT_TAG_NAME, EditableListElement);
 }
-register();
