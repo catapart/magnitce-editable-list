@@ -6,8 +6,7 @@
   "module": "dist/editable-list.mjs",
   "types": "dist/editable-list.d.ts",
   "scripts": {
-    "build": "tsup editable-list.ts --format cjs,esm --dts --clean && tsc --outDir ./vanilla",
-    "minify": "minify ./disteditable-list.js > ./dist/editable-list.min.js",
+    "build": "tsup editable-list.ts --format cjs,esm --dts --clean",
     "lint": "tsc",
     "package": "tsup editable-list.ts --format cjs,esm --dts --clean && tsc --outDir ./vanilla && minify ./vanilla/editable-list.js > ./vanilla/editable-list.min.js",
     "release": "tsup editable-list.ts --format cjs,esm --dts && tsc --outDir ./vanilla && minify ./vanilla/editable-list.js > ./vanilla/editable-list.min.js && changeset publish"
