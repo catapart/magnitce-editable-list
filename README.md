@@ -60,11 +60,14 @@ npm install @magnit-ce/editable-list
 ### Import
 #### Vanilla js/ts
 ```js
+import "/path/to/editable-list[.min].js"; // if you didn't reference from a <script>, reference with an import like this
+
 import { EditableList } from "/path/to/editable-list[.min].js";
 ```
 #### npm
 ```js
-import { EditableList } from "@magnit-ce/editable-list";
+import { register, EditableList } from "@magnit-ce/editable-list";
+register(); // with npm, direct imports can cause issues with bundlers. To prevent direct imports, just use the register function 
 ```
 
 ### Add Items
