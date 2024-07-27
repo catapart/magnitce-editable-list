@@ -1,5 +1,11 @@
 # @magnit-ce/editable-list
 
+## 0.0.4
+
+### Patch Changes
+
+- 2b22a08: updated npm packaging to not include typescript
+
 ## 0.0.3
 
 ### Patch Changes
