@@ -5,7 +5,7 @@ Also includes an "Add Item" button to facilate expected list editing functionali
 
 Configurable to use edit buttons instead of, or in addition to, remove buttons.
 
-Package size: ~5kb minified, ~9kb verbose.
+Package size: ~4kb minified, ~9kb verbose.
 
 ## Quick Reference
 ```html

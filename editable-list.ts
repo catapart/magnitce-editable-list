@@ -101,6 +101,23 @@ export class EditableListElement extends HTMLElement
         this.shadowRoot!.innerHTML = HTML;
         this.shadowRoot!.adoptedStyleSheets.push(COMPONENT_STYLESHEET);
 
+        this.addEventListener('click', (event: Event) =>
+        {
+            let button = event.composedPath().find(item => item instanceof HTMLButtonElement);
+            if(button == null) { return; }
+            let item: HTMLElement = button.parentElement!;
+            const part = button.getAttribute('part');
+            if(part == 'edit')
+            {
+                this.dispatchEvent(new CustomEvent('edit', { detail: item }));
+            }
+            else if(part == 'remove')
+            {
+                item.remove();
+                this.dispatchEvent(new CustomEvent('remove', { detail: item }));
+            }
+        })
+
         this.findPart(EditableListPart.AddButton)?.addEventListener('click', this.#boundEventHandlers.get('add')!);
         this.getPart<HTMLSlotElement>(EditableListPart.ItemsSlot).addEventListener('slotchange', this.#updateItemButtons.bind(this))
         
@@ -181,31 +198,7 @@ export class EditableListElement extends HTMLElement
                     {
                         editButton.textContent = '…';
                     }
-
-                    editButton.addEventListener('click', (event: Event) =>
-                    { 
-                        this.dispatchEvent(new CustomEvent('edit', { detail: item }));
-                        if(this.hasAttribute('cancel-edit'))
-                        {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            return false;
-                        }
-                    });
                     item.appendChild(editButton);
-                }
-                else
-                {
-                    existingEditButton.addEventListener('click', (event: Event) =>
-                    { 
-                        this.dispatchEvent(new CustomEvent('edit', { detail: item }));
-                        if(this.hasAttribute('cancel-edit'))
-                        {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            return false;
-                        }
-                    });
                 }
             }
             else if(existingEditButton != null)
@@ -230,32 +223,7 @@ export class EditableListElement extends HTMLElement
                     {
                         removeButton.textContent = '×';
                     }
-                    removeButton.addEventListener('click', (event: Event) =>
-                    { 
-                        item.remove();
-                        this.dispatchEvent(new CustomEvent('remove', { detail: item }));
-                        if(this.hasAttribute('cancel-remove'))
-                        {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            return false;
-                        }
-                    });
                     item.appendChild(removeButton);
-                }
-                else
-                {
-                    existingRemoveButton.addEventListener('click', (event: Event) =>
-                    { 
-                        item.remove();
-                        this.dispatchEvent(new CustomEvent('remove', { detail: item }));
-                        if(this.hasAttribute('cancel-remove'))
-                        {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            return false;
-                        }
-                    });
                 }
             }
             else if(existingRemoveButton != null)
