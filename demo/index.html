@@ -15,11 +15,14 @@
       </header>
       <article class="overview">
         <h2>Overview</h2>
-        <p><code>&lt;editable-list&gt;</code></p>
+        <p>The <code>&lt;editable-list&gt;</code> element is meant to allow users to remove arbitrary dom elements in a simple-to-define scope.</p>
+        <p>It also provides conveniences for editing and adding new elements, without actually implementing functionality to achieve that.</p>
+        <p>The <code>&lt;editable-list&gt;</code> element is also unstyled and is expected to be used as a "building block"-style component.</p>
       </article>
       <article class="basic">
         <h2>Basic Example</h2>
         <div class="description">
+            A simple <code>&lt;editable-list&gt;</code> with no customizations
         </div>
         <div class="example">
             <editable-list>
@@ -29,13 +32,11 @@
                 <li>D</li>
             </editable-list>
         </div>
-        <script type="module">
-          const basicList = document.querySelector('article.basic editable-list');
-        </script>
       </article>
       <article class="hide-remove">
         <h2>Hide Remove Button</h2>
         <div class="description">
+            <p>In this example, the <code>&lt;editable-list&gt;</code>'s <code>remove</code> attribute is set to <code>false</code>, which hides the remove buttons.</p>
         </div>
         <div class="example">
             <editable-list remove="false">
@@ -49,6 +50,7 @@
       <article class="include-edit">
         <h2>Include Edit Button</h2>
         <div class="description">
+            <p>In this example, the <code>&lt;editable-list&gt;</code>'s <code>edit</code> attribute is set to <code>true</code>, which includes an edit button that dispatches <code>edit</code> events, when clicked.</p>
         </div>
         <div class="example">
             <editable-list edit="true">
@@ -62,6 +64,8 @@
       <article class="replace-remove">
         <h2>Replace Remove Button with Edit Button</h2>
         <div class="description">
+            <p>In this example, the <code>&lt;editable-list&gt;</code>'s <code>remove</code> attribute is set to <code>false</code> and its <code>edit</code> attribute is set to <code>true</code> which has the effect of "replacing" the remove button.</p>
+            <p>This example is mainly here to show why you would ever want to hide the "remove" button on a list that has default functionality to remove items. In the case where you just need editing, the remove button can be hidden while showing other useful buttons like "add" and "edit".</p>
         </div>
         <div class="example">
             <editable-list remove="false" edit="true">
@@ -75,6 +79,8 @@
       <article class="custom-add">
         <h2>Custom Add Button</h2>
         <div class="description">
+            <p>In this example, the <code>&lt;editable-list&gt;</code> has been given a child with a <code>slot</code> attribute of <code>add</code>, which replaces the default add button with that child.</p>
+            <p>Note how this example's add button says the word "Add", rather than using the default "plus" (<code>+</code>) symbol.</p>
         </div>
         <div class="example">
             <editable-list>
@@ -89,6 +95,9 @@
       <article class="custom-remove">
         <h2>Custom Remove/Edit Button</h2>
         <div class="description">
+            <p>In this example, the <code>&lt;editable-list&gt;</code> has been given two <code>&lt;template&gt;</code> children with <code>part</code> attributes set to <code>remove-button</code> and <code>edit-button</code>.</p>
+            <p>These templates set the internal content of the "remove" and "edit" buttons, respectively. Note how they each contain words to describe their function, rather than symbols.</p>
+            <p>The content for these buttons is set using a <code>&lt;template&gt;</code>, rather than a <code>&lt;slot&gt;</code>, because a slot is a singular area replacement, whereas these buttons will need to be added to each child of the <code>&lt;editable-list&gt;</code> element.</p>
         </div>
         <div class="example">
             <editable-list edit="true">
@@ -101,9 +110,62 @@
             </editable-list>
         </div>
       </article>
+      <article class="events">
+        <h2>Events</h2>
+        <div class="description">
+            <p>In this example, the <code>&lt;editable-list&gt;</code> events are being handled and logged to the Event Log, below.</p>
+            <p>For the third item, the event's <code>preventDefault()</code> function is invoked, which stops the <code>remove</code> event's default functionality of removing the item.</p>
+        </div>
+        <div class="example">
+            <editable-list edit="true">
+                <li>A</li>
+                <li>B</li>
+                <li class="prevent-remove">This item cannot be removed</li>
+                <li>D</li>
+            </editable-list>
+        </div>
+        <div class="log">
+            <header>Event Log</header>
+            <ul id="transitions-event-log"></ul>
+        </div>
+        <script type="module">
+          const eventsList = document.querySelector('article.events editable-list');
+          const unremoveable = eventsList.querySelector('.prevent-remove');
+
+          const eventsLog = document.querySelector('article.events .log');
+
+          document.addEventListener('DOMContentLoaded', () =>
+          {
+            eventsList.addEventListener('edit', (event) =>
+            {
+                logResult('Edit: ' + event.detail.firstChild.textContent);
+            });
+            eventsList.addEventListener('remove', (event) =>
+            {
+                logResult('Remove: ' + event.detail.firstChild.textContent);
+                if(event.detail == unremoveable)
+                {
+                    event.preventDefault();
+                }
+            });
+          });
+          
+          function logResult(result)
+          {
+              const entryElement = document.createElement('li');
+              const codeElement = document.createElement('code');
+              const preElement = document.createElement('pre');
+              preElement.textContent = JSON.stringify(result, null, 2);
+              codeElement.append(preElement);
+              entryElement.append(codeElement);
+              eventsLog.append(entryElement);
+          } 
+        </script>
+      </article>
       <article class="custom-style">
         <h2>Styled</h2>
         <div class="description">
+            <p>In this example, the <code>&lt;editable-list&gt;</code> has had each of its parts styled (hideously) to show how each can be referenced by CSS for custom styling.</p>
         </div>
         <div class="example">
             <style>
