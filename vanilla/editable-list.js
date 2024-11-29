@@ -76,6 +76,21 @@ export class EditableListElement extends HTMLElement {
         this.attachShadow({ mode: "open" });
         this.shadowRoot.innerHTML = HTML;
         this.shadowRoot.adoptedStyleSheets.push(COMPONENT_STYLESHEET);
+        this.addEventListener('click', (event) => {
+            let button = event.composedPath().find(item => item instanceof HTMLButtonElement);
+            if (button == null) {
+                return;
+            }
+            let item = button.parentElement;
+            const part = button.getAttribute('part');
+            if (part == 'edit') {
+                this.dispatchEvent(new CustomEvent('edit', { detail: item }));
+            }
+            else if (part == 'remove') {
+                item.remove();
+                this.dispatchEvent(new CustomEvent('remove', { detail: item }));
+            }
+        });
         this.findPart(EditableListPart.AddButton)?.addEventListener('click', this.#boundEventHandlers.get('add'));
         this.getPart(EditableListPart.ItemsSlot).addEventListener('slotchange', this.#updateItemButtons.bind(this));
     }
@@ -137,25 +152,7 @@ export class EditableListElement extends HTMLElement {
                     else {
                         editButton.textContent = '…';
                     }
-                    editButton.addEventListener('click', (event) => {
-                        this.dispatchEvent(new CustomEvent('edit', { detail: item }));
-                        if (this.hasAttribute('cancel-edit')) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            return false;
-                        }
-                    });
                     item.appendChild(editButton);
-                }
-                else {
-                    existingEditButton.addEventListener('click', (event) => {
-                        this.dispatchEvent(new CustomEvent('edit', { detail: item }));
-                        if (this.hasAttribute('cancel-edit')) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            return false;
-                        }
-                    });
                 }
             }
             else if (existingEditButton != null) {
@@ -174,27 +171,7 @@ export class EditableListElement extends HTMLElement {
                     else {
                         removeButton.textContent = '×';
                     }
-                    removeButton.addEventListener('click', (event) => {
-                        item.remove();
-                        this.dispatchEvent(new CustomEvent('remove', { detail: item }));
-                        if (this.hasAttribute('cancel-remove')) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            return false;
-                        }
-                    });
                     item.appendChild(removeButton);
-                }
-                else {
-                    existingRemoveButton.addEventListener('click', (event) => {
-                        item.remove();
-                        this.dispatchEvent(new CustomEvent('remove', { detail: item }));
-                        if (this.hasAttribute('cancel-remove')) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            return false;
-                        }
-                    });
                 }
             }
             else if (existingRemoveButton != null) {
@@ -233,21 +210,6 @@ export class EditableListElement extends HTMLElement {
         }
     }
 }
-/**
- * Registers the element with the current DOM.
- *
- * If editable-list was included as a `<script>` tag, or was directly imported (`import 'editable-list';`),
- * you **do not** need to call this function. It will have been auto-called from
- * the tag or import statement.
- *
- * If you have loaded editable-list from `npm` this function is a convenient way to register the element
- * that prevents bundlers from having to use raw import functionality.
- * @example import { register } from 'editable-list';
- * register();
- */
-export function register() {
-    if (customElements.get(COMPONENT_TAG_NAME) == null) {
-        customElements.define(COMPONENT_TAG_NAME, EditableListElement);
-    }
+if (customElements.get(COMPONENT_TAG_NAME) == null) {
+    customElements.define(COMPONENT_TAG_NAME, EditableListElement);
 }
-register();
