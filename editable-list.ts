@@ -109,7 +109,12 @@ export class EditableListElement extends HTMLElement
             const part = button.getAttribute('part');
             if(part == 'edit')
             {
-                this.dispatchEvent(new CustomEvent('edit', { detail: item, bubbles: true }));
+                const result = this.dispatchEvent(new CustomEvent('edit', { detail: item, bubbles: true }));
+                if(result == false && this.getAttribute("button-propagation") == "false")
+                {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
             }
             else if(part == 'remove')
             {
@@ -117,6 +122,11 @@ export class EditableListElement extends HTMLElement
                 if(result == true)
                 {
                     item.remove();
+                }
+                else if(this.getAttribute("button-propagation") == "false")
+                {
+                    event.preventDefault();
+                    event.stopPropagation();
                 }
             }
         })
