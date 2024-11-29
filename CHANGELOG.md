@@ -1,5 +1,11 @@
 # @magnit-ce/editable-list
 
+## 0.0.8
+
+### Patch Changes
+
+- 6022fbb: updated events for bubbling/cancelling
+
 ## 0.0.7
 
 ### Patch Changes
