@@ -1,5 +1,11 @@
 # @magnit-ce/editable-list
 
+## 0.0.9
+
+### Patch Changes
+
+- 5240626: added cancel feature for button clicks
+
 ## 0.0.8
 
 ### Patch Changes
