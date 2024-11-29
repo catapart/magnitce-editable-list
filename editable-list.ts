@@ -109,12 +109,15 @@ export class EditableListElement extends HTMLElement
             const part = button.getAttribute('part');
             if(part == 'edit')
             {
-                this.dispatchEvent(new CustomEvent('edit', { detail: item }));
+                this.dispatchEvent(new CustomEvent('edit', { detail: item, bubbles: true }));
             }
             else if(part == 'remove')
             {
-                item.remove();
-                this.dispatchEvent(new CustomEvent('remove', { detail: item }));
+                const result = this.dispatchEvent(new CustomEvent('remove', { detail: item, bubbles: true, cancelable: true  }));
+                if(result == true)
+                {
+                    item.remove();
+                }
             }
         })
 
