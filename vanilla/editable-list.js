@@ -85,7 +85,7 @@ export class EditableListElement extends HTMLElement {
             const part = button.getAttribute('part');
             if (part == 'edit') {
                 const result = this.dispatchEvent(new CustomEvent('edit', { detail: item, bubbles: true }));
-                if (result == false && this.getAttribute("button-propagation") == "false") {
+                if (this.hasAttribute("cancel-edit")) {
                     event.preventDefault();
                     event.stopPropagation();
                 }
@@ -95,7 +95,7 @@ export class EditableListElement extends HTMLElement {
                 if (result == true) {
                     item.remove();
                 }
-                else if (this.getAttribute("button-propagation") == "false") {
+                if (this.hasAttribute("cancel-remove")) {
                     event.preventDefault();
                     event.stopPropagation();
                 }
