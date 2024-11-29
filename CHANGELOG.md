@@ -1,5 +1,11 @@
 # @magnit-ce/editable-list
 
+## 0.0.10
+
+### Patch Changes
+
+- f625e52: refactored click event cancellation attributes
+
 ## 0.0.9
 
 ### Patch Changes
