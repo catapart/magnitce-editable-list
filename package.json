@@ -1,6 +1,6 @@
 {
   "name": "@magnit-ce/editable-list",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A custom html element that adds a remove button to its children and removes the child when the button is pressed",
   "main": "dist/editable-list.js",
   "module": "dist/editable-list.mjs",
