@@ -1,5 +1,11 @@
 # @magnit-ce/editable-list
 
+## 0.0.11
+
+### Patch Changes
+
+- 6c91442: added class and part customization for remove and edit buttons
+
 ## 0.0.10
 
 ### Patch Changes
