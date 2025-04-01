@@ -34,8 +34,8 @@ const IGNORED_TAGS = new Set([
 ]);
 
 /** The `shadowRoot` content definition */
-const HTML = `<div part="${EditableListPart.Items}"><slot part="${EditableListPart.ItemsSlot}"></slot></div>
-<slot name="add"><button part="${EditableListPart.AddButton}" type="button">&plus;</button></slot>`;
+const HTML = `<div id="${EditableListPart.Items}"><slot id="${EditableListPart.ItemsSlot}"></slot></div>
+<slot name="add"><button id="${EditableListPart.AddButton}" class="button" type="button">&plus;</button></slot>`;
 /** Default styles for the `editable-list` element */
 const STYLE = `
 * { box-sizing: border-box; }
@@ -69,30 +69,18 @@ export class EditableListElement extends HTMLElement
         ['add', this.#addButton_onClick.bind(this)]
     ]);
 
-    /** Cached references to parts of this element, using the `part` attribute values as keys */
     componentParts: Map<string, HTMLElement> = new Map();
-    /**
-     * Get and cache an HTMLElement in this element's `shadowDOM` by it's `part` attribute value.
-     * @param key the `part` attribute value of the `shadowDOM`'s target child element.
-     * @returns the target child element
-     */
-    getPart<T extends HTMLElement = HTMLElement>(key: string)
+    getElement<T extends HTMLElement = HTMLElement>(id: string)
     {
-        if(this.componentParts.get(key) == null)
+        if(this.componentParts.get(id) == null)
         {
-            const part = this.shadowRoot!.querySelector(`[part="${key}"]`) as HTMLElement;
-            if(part != null) { this.componentParts.set(key, part); }
+            const part = this.findElement(id);
+            if(part != null) { this.componentParts.set(id, part); }
         }
 
-        return this.componentParts.get(key) as T;
+        return this.componentParts.get(id) as T;
     }
-    /**
-     * Get an HTMLElement in this element's `shadowDOM` by it's `part` attribute value.  
-     * Unlike `getPart`, this method does not cache the value to keep in runtime memory.
-     * @param key the `part` attribute value of the `shadowDOM`'s target child element.
-     * @returns the target child element
-     */
-    findPart<T extends HTMLElement = HTMLElement>(key: string) { return this.shadowRoot!.querySelector(`[part="${key}"]`) as T; }
+    findElement<T extends HTMLElement = HTMLElement>(id: string) { return this.shadowRoot!.getElementById(id) as T; }
 
     constructor()
     {
@@ -106,8 +94,7 @@ export class EditableListElement extends HTMLElement
             let button = event.composedPath().find(item => item instanceof HTMLButtonElement);
             if(button == null) { return; }
             let item: HTMLElement = button.parentElement!;
-            const part = button.getAttribute('part');
-            if(part == 'edit')
+            if(button.classList.contains('edit'))
             {
                 const result = this.dispatchEvent(new CustomEvent('edit', { detail: item, bubbles: true }));
                 if(this.hasAttribute("cancel-edit"))
@@ -116,7 +103,7 @@ export class EditableListElement extends HTMLElement
                     event.stopPropagation();
                 }
             }
-            else if(part == 'remove')
+            else if(button.classList.contains('remove'))
             {
                 const result = this.dispatchEvent(new CustomEvent('remove', { detail: item, bubbles: true, cancelable: true  }));
                 if(result == true)
@@ -131,9 +118,24 @@ export class EditableListElement extends HTMLElement
             }
         })
 
-        this.findPart(EditableListPart.AddButton)?.addEventListener('click', this.#boundEventHandlers.get('add')!);
-        this.getPart<HTMLSlotElement>(EditableListPart.ItemsSlot).addEventListener('slotchange', this.#updateItemButtons.bind(this))
+        this.findElement(EditableListPart.AddButton)?.addEventListener('click', this.#boundEventHandlers.get('add')!);
+        this.getElement<HTMLSlotElement>(EditableListPart.ItemsSlot).addEventListener('slotchange', this.#updateItemButtons.bind(this));
+
+        this.#applyPartAttributes();
         
+    }
+    #applyPartAttributes()
+    {
+        const identifiedElements = [...this.shadowRoot!.querySelectorAll('[id]')];
+        for(let i = 0; i < identifiedElements.length; i++)
+        {
+            identifiedElements[i].part.add(identifiedElements[i].id);
+        }
+        const classedElements = [...this.shadowRoot!.querySelectorAll('[class]')];
+        for(let i = 0; i < classedElements.length; i++)
+        {
+            classedElements[i].part.add(...classedElements[i].classList);
+        }
     }
 
     /**
@@ -178,7 +180,7 @@ export class EditableListElement extends HTMLElement
      */
     #updateItemButtons()
     {
-        const children = this.getPart<HTMLSlotElement>(EditableListPart.ItemsSlot).assignedElements();
+        const children = this.getElement<HTMLSlotElement>(EditableListPart.ItemsSlot).assignedElements();
         for(let i = 0; i < children.length; i++)
         {
             const target = children[i];
@@ -194,14 +196,20 @@ export class EditableListElement extends HTMLElement
 
             const item = children[i];
 
-            const existingEditButton = children[i].querySelector(`button[part="${EditableListPart.EditButton}"]`);
+            const existingEditButton = children[i].querySelector(`button.${EditableListPart.EditButton}`);
             if(this.canEdit)
             {
                 if(existingEditButton == null)
                 {
                     const editButton = document.createElement('button');
                     editButton.type = 'button';
-                    editButton.setAttribute('part', 'edit');
+                    const editClasses = this.getAttribute('edit-class')?.trim() ?? "";
+                    editButton.classList.add(EditableListPart.EditButton);
+                    if(editClasses != "")
+                    {
+                        editButton.classList.add(...editClasses.split(' '));
+                    }
+                    editButton.setAttribute('part', `${EditableListPart.EditButton}${(editClasses != '') ? ` ${editClasses}` : ''}`);
                     const template = this.querySelector(`template[part="${ButtonTemplatePart.EditButton}"]`) as HTMLTemplateElement;
                     if(template != null)
                     {
@@ -219,14 +227,20 @@ export class EditableListElement extends HTMLElement
                 existingEditButton.remove();
             }
 
-            const existingRemoveButton = children[i].querySelector(`button[part="${EditableListPart.RemoveButton}"]`);
+            const existingRemoveButton = children[i].querySelector(`button.${EditableListPart.RemoveButton}`);
             if(this.canRemove)
             {
                 if(existingRemoveButton == null)
                 {
                     const removeButton = document.createElement('button');
                     removeButton.type = 'button';
-                    removeButton.setAttribute('part', 'remove');
+                    const removeClasses = this.getAttribute('remove-class')?.trim() ?? "";
+                    removeButton.classList.add(EditableListPart.RemoveButton);
+                    if(removeClasses != '')
+                    {
+                        removeButton.classList.add(...removeClasses.split(' '));
+                    }
+                    removeButton.setAttribute('part', `${EditableListPart.RemoveButton}${(removeClasses != '') ? ` ${removeClasses}` : ''}`);
                     const template = this.querySelector(`template[part="${ButtonTemplatePart.RemoveButton}"]`) as HTMLTemplateElement;
                     if(template != null)
                     {

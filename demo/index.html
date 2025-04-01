@@ -136,6 +136,10 @@
 
           document.addEventListener('DOMContentLoaded', () =>
           {
+            eventsList.addEventListener('add', (event) =>
+            {
+                logResult('Add');
+            });
             eventsList.addEventListener('edit', (event) =>
             {
                 logResult('Edit: ' + event.detail.firstChild.textContent);
