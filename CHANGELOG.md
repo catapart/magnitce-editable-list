@@ -1,5 +1,11 @@
 # @magnit-ce/editable-list
 
+## 0.1.1
+
+### Patch Changes
+
+- a5e3dfe: fixed issue with types not packaging correctly
+
 ## 0.1.0
 
 ### Minor Changes
