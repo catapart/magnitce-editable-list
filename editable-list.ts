@@ -34,7 +34,10 @@ const IGNORED_TAGS = new Set([
 ]);
 
 /** The `shadowRoot` content definition */
-const HTML = `<div part="${EditableListPart.Items}"><slot part="${EditableListPart.ItemsSlot}"></slot></div>
+const HTML = `<div part="${EditableListPart.Items}">
+    <div part="placeholder"></div>
+    <slot part="${EditableListPart.ItemsSlot}"></slot>
+</div>
 <slot name="add"><button part="${EditableListPart.AddButton}" type="button">&plus;</button></slot>`;
 /** Default styles for the `editable-list` element */
 const STYLE = `
@@ -50,7 +53,12 @@ const STYLE = `
     margin-inline-end: 0px;
     padding-inline-start: 40px;
     /* end default ul styles */
-}`
+}
+:host(:not(.empty)) [part="placeholder"]
+{
+    display: none;
+}
+`
 
 
 const COMPONENT_STYLESHEET = new CSSStyleSheet();
@@ -132,7 +140,18 @@ export class EditableListElement extends HTMLElement
         })
 
         this.findPart(EditableListPart.AddButton)?.addEventListener('click', this.#boundEventHandlers.get('add')!);
-        this.getPart<HTMLSlotElement>(EditableListPart.ItemsSlot).addEventListener('slotchange', this.#updateItemButtons.bind(this))
+        this.getPart<HTMLSlotElement>(EditableListPart.ItemsSlot).addEventListener('slotchange', this.#updateItemButtons.bind(this));
+        const children = this.getPart<HTMLSlotElement>(EditableListPart.ItemsSlot).assignedElements();
+        if(children.length == 0)
+        {
+            this.classList.add('empty');
+            this.part.add('empty');
+        }
+        else
+        {
+            this.classList.remove('empty');
+            this.part.remove('empty');
+        }
         
     }
 
@@ -179,6 +198,16 @@ export class EditableListElement extends HTMLElement
     #updateItemButtons()
     {
         const children = this.getPart<HTMLSlotElement>(EditableListPart.ItemsSlot).assignedElements();
+        if(children.length == 0)
+        {
+            this.classList.add('empty');
+            this.part.add('empty');
+        }
+        else
+        {
+            this.classList.remove('empty');
+            this.part.remove('empty');
+        }
         for(let i = 0; i < children.length; i++)
         {
             const target = children[i];
@@ -250,6 +279,7 @@ export class EditableListElement extends HTMLElement
     static observedAttributes = [
         'remove',
         'edit',
+        'placeholder',
     ];
     /**
      * Update items to new configuration when attributes change
@@ -282,6 +312,10 @@ export class EditableListElement extends HTMLElement
                 this.canEdit = true;
             }
             this.#updateItemButtons();
+        }
+        else if(attributeName == "placeholder")
+        {
+            this.findPart('placeholder').textContent = newValue;
         }
     }
 }
