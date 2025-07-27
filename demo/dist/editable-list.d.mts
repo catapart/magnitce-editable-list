@@ -15,7 +15,8 @@ declare enum EditableListPart {
     AddButton = "add",
     ItemsSlot = "items-slot",
     EditButton = "edit",
-    RemoveButton = "remove"
+    RemoveButton = "remove",
+    Placeholder = "placeholder"
 }
 /** `part` attribute values for assigning remove button and edit button templates */
 declare enum ButtonTemplatePart {
@@ -29,21 +30,7 @@ declare class EditableListElement extends HTMLElement {
     canRemove: boolean;
     /** if `true`, allows the edit button to be added and the edit event to be dispatched */
     canEdit: boolean;
-    /** Cached references to parts of this element, using the `part` attribute values as keys */
-    componentParts: Map<string, HTMLElement>;
-    /**
-     * Get and cache an HTMLElement in this element's `shadowDOM` by it's `part` attribute value.
-     * @param key the `part` attribute value of the `shadowDOM`'s target child element.
-     * @returns the target child element
-     */
-    getPart<T extends HTMLElement = HTMLElement>(key: string): T;
-    /**
-     * Get an HTMLElement in this element's `shadowDOM` by it's `part` attribute value.
-     * Unlike `getPart`, this method does not cache the value to keep in runtime memory.
-     * @param key the `part` attribute value of the `shadowDOM`'s target child element.
-     * @returns the target child element
-     */
-    findPart<T extends HTMLElement = HTMLElement>(key: string): T;
+    findElement<T extends HTMLElement = HTMLElement>(id: string): T;
     constructor();
     /**
      * Create a new instance of an `EditableListElement` element using the provided properties to define the configuration.

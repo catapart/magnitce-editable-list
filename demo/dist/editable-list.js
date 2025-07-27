@@ -5,6 +5,7 @@ var EditableListPart = /* @__PURE__ */ ((EditableListPart2) => {
   EditableListPart2["ItemsSlot"] = "items-slot";
   EditableListPart2["EditButton"] = "edit";
   EditableListPart2["RemoveButton"] = "remove";
+  EditableListPart2["Placeholder"] = "placeholder";
   return EditableListPart2;
 })(EditableListPart || {});
 var ButtonTemplatePart = /* @__PURE__ */ ((ButtonTemplatePart2) => {
@@ -16,11 +17,11 @@ var IGNORED_TAGS = /* @__PURE__ */ new Set([
   "style",
   "template"
 ]);
-var HTML = `<div part="${"items" /* Items */}">
-    <div part="placeholder"></div>
-    <slot part="${"items-slot" /* ItemsSlot */}"></slot>
+var HTML = `<div id="${"items" /* Items */}" part="${"items" /* Items */}">
+    <div id="${"placeholder" /* Placeholder */}" part="${"placeholder" /* Placeholder */}"></div>
+    <slot id="${"items-slot" /* ItemsSlot */}" part="${"items-slot" /* ItemsSlot */}"></slot>
 </div>
-<slot name="add"><button part="${"add" /* AddButton */}" type="button">&plus;</button></slot>`;
+<slot name="add"><button id="${"add" /* AddButton */}" part="${"add" /* AddButton */}" type="button">&plus;</button></slot>`;
 var STYLE = `
 * { box-sizing: border-box; }
 :host
@@ -35,7 +36,7 @@ var STYLE = `
     padding-inline-start: 40px;
     /* end default ul styles */
 }
-:host(:not(.empty)) [part="placeholder"]
+:host(:not(.empty)) #${"placeholder" /* Placeholder */}
 {
     display: none;
 }
@@ -51,30 +52,8 @@ var EditableListElement = class extends HTMLElement {
   #boundEventHandlers = /* @__PURE__ */ new Map([
     ["add", this.#addButton_onClick.bind(this)]
   ]);
-  /** Cached references to parts of this element, using the `part` attribute values as keys */
-  componentParts = /* @__PURE__ */ new Map();
-  /**
-   * Get and cache an HTMLElement in this element's `shadowDOM` by it's `part` attribute value.
-   * @param key the `part` attribute value of the `shadowDOM`'s target child element.
-   * @returns the target child element
-   */
-  getPart(key) {
-    if (this.componentParts.get(key) == null) {
-      const part = this.shadowRoot.querySelector(`[part="${key}"]`);
-      if (part != null) {
-        this.componentParts.set(key, part);
-      }
-    }
-    return this.componentParts.get(key);
-  }
-  /**
-   * Get an HTMLElement in this element's `shadowDOM` by it's `part` attribute value.  
-   * Unlike `getPart`, this method does not cache the value to keep in runtime memory.
-   * @param key the `part` attribute value of the `shadowDOM`'s target child element.
-   * @returns the target child element
-   */
-  findPart(key) {
-    return this.shadowRoot.querySelector(`[part="${key}"]`);
+  findElement(id) {
+    return this.shadowRoot.getElementById(id);
   }
   constructor() {
     super();
@@ -87,14 +66,13 @@ var EditableListElement = class extends HTMLElement {
         return;
       }
       let item = button.parentElement;
-      const part = button.getAttribute("part");
-      if (part == "edit") {
+      if (button.classList.contains("edit")) {
         const result = this.dispatchEvent(new CustomEvent("edit", { detail: item, bubbles: true }));
         if (this.hasAttribute("cancel-edit")) {
           event.preventDefault();
           event.stopPropagation();
         }
-      } else if (part == "remove") {
+      } else if (button.classList.contains("remove")) {
         const result = this.dispatchEvent(new CustomEvent("remove", { detail: item, bubbles: true, cancelable: true }));
         if (result == true) {
           item.remove();
@@ -105,15 +83,25 @@ var EditableListElement = class extends HTMLElement {
         }
       }
     });
-    this.findPart("add" /* AddButton */)?.addEventListener("click", this.#boundEventHandlers.get("add"));
-    this.getPart("items-slot" /* ItemsSlot */).addEventListener("slotchange", this.#updateItemButtons.bind(this));
-    const children = this.getPart("items-slot" /* ItemsSlot */).assignedElements();
+    this.findElement("add" /* AddButton */)?.addEventListener("click", this.#boundEventHandlers.get("add"));
+    this.findElement("items-slot" /* ItemsSlot */).addEventListener("slotchange", this.#updateItemButtons.bind(this));
+    const children = this.findElement("items-slot" /* ItemsSlot */).assignedElements();
     if (children.length == 0) {
       this.classList.add("empty");
       this.part.add("empty");
     } else {
       this.classList.remove("empty");
       this.part.remove("empty");
+    }
+  }
+  #applyPartAttributes() {
+    const identifiedElements = [...this.shadowRoot.querySelectorAll("[id]")];
+    for (let i = 0; i < identifiedElements.length; i++) {
+      identifiedElements[i].part.add(identifiedElements[i].id);
+    }
+    const classedElements = [...this.shadowRoot.querySelectorAll("[class]")];
+    for (let i = 0; i < classedElements.length; i++) {
+      classedElements[i].part.add(...classedElements[i].classList);
     }
   }
   /**
@@ -148,7 +136,7 @@ var EditableListElement = class extends HTMLElement {
    * Iterate through slot children to add buttons and listeners where applicable.
    */
   #updateItemButtons() {
-    const children = this.getPart("items-slot" /* ItemsSlot */).assignedElements();
+    const children = this.findElement("items-slot" /* ItemsSlot */).assignedElements();
     if (children.length == 0) {
       this.classList.add("empty");
       this.part.add("empty");
@@ -165,12 +153,17 @@ var EditableListElement = class extends HTMLElement {
         continue;
       }
       const item = children[i];
-      const existingEditButton = children[i].querySelector(`button[part="${"edit" /* EditButton */}"]`);
+      const existingEditButton = children[i].querySelector(`button.${"edit" /* EditButton */}`);
       if (this.canEdit) {
         if (existingEditButton == null) {
           const editButton = document.createElement("button");
           editButton.type = "button";
-          editButton.setAttribute("part", "edit");
+          const editClasses = this.getAttribute("edit-class")?.trim() ?? "";
+          editButton.classList.add("edit" /* EditButton */);
+          if (editClasses != "") {
+            editButton.classList.add(...editClasses.split(" "));
+          }
+          editButton.setAttribute("part", `${"edit" /* EditButton */}${editClasses != "" ? ` ${editClasses}` : ""}`);
           const template = this.querySelector(`template[part="${"edit-button" /* EditButton */}"]`);
           if (template != null) {
             editButton.append(template.content.cloneNode(true));
@@ -182,12 +175,17 @@ var EditableListElement = class extends HTMLElement {
       } else if (existingEditButton != null) {
         existingEditButton.remove();
       }
-      const existingRemoveButton = children[i].querySelector(`button[part="${"remove" /* RemoveButton */}"]`);
+      const existingRemoveButton = children[i].querySelector(`button.${"remove" /* RemoveButton */}`);
       if (this.canRemove) {
         if (existingRemoveButton == null) {
           const removeButton = document.createElement("button");
           removeButton.type = "button";
-          removeButton.setAttribute("part", "remove");
+          const removeClasses = this.getAttribute("remove-class")?.trim() ?? "";
+          removeButton.classList.add("remove" /* RemoveButton */);
+          if (removeClasses != "") {
+            removeButton.classList.add(...removeClasses.split(" "));
+          }
+          removeButton.setAttribute("part", `${"remove" /* RemoveButton */}${removeClasses != "" ? ` ${removeClasses}` : ""}`);
           const template = this.querySelector(`template[part="${"remove-button" /* RemoveButton */}"]`);
           if (template != null) {
             removeButton.append(template.content.cloneNode(true));
@@ -228,7 +226,7 @@ var EditableListElement = class extends HTMLElement {
       }
       this.#updateItemButtons();
     } else if (attributeName == "placeholder") {
-      this.findPart("placeholder").textContent = newValue;
+      this.findElement("placeholder").textContent = newValue;
     }
   }
 };
