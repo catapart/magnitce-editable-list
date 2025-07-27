@@ -3,13 +3,13 @@
   "version": "0.0.11",
   "description": "A custom html element that adds a remove button to its children and removes the child when the button is pressed",
   "main": "dist/editable-list.js",
-  "module": "dist/editable-list.js",
+  "module": "dist/editable-list.mjs",
   "types": "dist/editable-list.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup editable-list.ts --format esm --dts --clean",
+    "build": "tsup editable-list.ts --format esm,cjs --dts --clean",
     "minify": "tsup editable-list.ts --format esm --config ./tsup.config.min.ts --outDir ./dist --minify",
     "copyToDemo": "node -e \"const fs = require('fs'); fs.cpSync('dist', 'demo/dist', {recursive: true});\"",
     "lint": "tsup editable-list.ts --format esm --tsconfig ./tsconfig.lint.json",

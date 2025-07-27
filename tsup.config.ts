@@ -4,7 +4,16 @@ export default defineConfig({
         '.html': 'text',
         '.css': 'text'
     },
-    outExtension({format}) { return { js: '.js' }},
     noExternal: [/(.*)/],
-    splitting: false
+    splitting: false,
+    outExtension({ format }) {
+    if (format === 'esm') {
+      return {
+        js: '.js',
+      };
+    }
+    return {
+      js: '.cjs', 
+    };
+  },
 })
