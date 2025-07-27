@@ -24,14 +24,34 @@
         <div class="description">
             A simple <code>&lt;editable-list&gt;</code> with no customizations
         </div>
+        <style>
+            editable-list::part(items):empty
+            {
+                background-color: red;
+                height: 50px;
+            }
+        </style>
         <div class="example">
-            <editable-list>
+            <editable-list placeholder="no items">
                 <li>A</li>
                 <li>B</li>
                 <li>C</li>
                 <li>D</li>
             </editable-list>
+            <editable-list id="empty-example" placeholder="Empty"></editable-list>
         </div>
+        <script type="module">
+            const emptyExample = document.getElementById('empty-example');
+            let values ='ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789';
+            emptyExample.addEventListener('add', () =>
+            {
+                const content = values[0];
+                values = values.substring(1);
+                const item = document.createElement('li');
+                item.textContent = content;
+                emptyExample.append(item);
+            })
+        </script>
       </article>
       <article class="hide-remove">
         <h2>Hide Remove Button</h2>
@@ -214,6 +234,6 @@
         </div>
       </article>
     </main>
-    <script type="module" src="../vanilla/editable-list.js"></script>
+    <script type="module" src="./dist/editable-list.js"></script>
   </body>
 </html>

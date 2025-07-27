@@ -19,6 +19,7 @@ export enum EditableListPart
     ItemsSlot = "items-slot",
     EditButton = "edit",
     RemoveButton = "remove",
+    Placeholder = 'placeholder',
 }
 /** `part` attribute values for assigning remove button and edit button templates */
 export enum ButtonTemplatePart
@@ -34,8 +35,11 @@ const IGNORED_TAGS = new Set([
 ]);
 
 /** The `shadowRoot` content definition */
-const HTML = `<div id="${EditableListPart.Items}"><slot id="${EditableListPart.ItemsSlot}"></slot></div>
-<slot name="add"><button id="${EditableListPart.AddButton}" class="button" type="button">&plus;</button></slot>`;
+const HTML = `<div id="${EditableListPart.Items}" part="${EditableListPart.Items}">
+    <div id="${EditableListPart.Placeholder}" part="${EditableListPart.Placeholder}"></div>
+    <slot id="${EditableListPart.ItemsSlot}" part="${EditableListPart.ItemsSlot}"></slot>
+</div>
+<slot name="add"><button id="${EditableListPart.AddButton}" part="${EditableListPart.AddButton}" type="button">&plus;</button></slot>`;
 /** Default styles for the `editable-list` element */
 const STYLE = `
 * { box-sizing: border-box; }
@@ -50,7 +54,12 @@ const STYLE = `
     margin-inline-end: 0px;
     padding-inline-start: 40px;
     /* end default ul styles */
-}`
+}
+:host(:not(.empty)) #${EditableListPart.Placeholder}
+{
+    display: none;
+}
+`
 
 
 const COMPONENT_STYLESHEET = new CSSStyleSheet();
@@ -69,17 +78,6 @@ export class EditableListElement extends HTMLElement
         ['add', this.#addButton_onClick.bind(this)]
     ]);
 
-    componentParts: Map<string, HTMLElement> = new Map();
-    getElement<T extends HTMLElement = HTMLElement>(id: string)
-    {
-        if(this.componentParts.get(id) == null)
-        {
-            const part = this.findElement(id);
-            if(part != null) { this.componentParts.set(id, part); }
-        }
-
-        return this.componentParts.get(id) as T;
-    }
     findElement<T extends HTMLElement = HTMLElement>(id: string) { return this.shadowRoot!.getElementById(id) as T; }
 
     constructor()
@@ -119,9 +117,18 @@ export class EditableListElement extends HTMLElement
         })
 
         this.findElement(EditableListPart.AddButton)?.addEventListener('click', this.#boundEventHandlers.get('add')!);
-        this.getElement<HTMLSlotElement>(EditableListPart.ItemsSlot).addEventListener('slotchange', this.#updateItemButtons.bind(this));
-
-        this.#applyPartAttributes();
+        this.findElement<HTMLSlotElement>(EditableListPart.ItemsSlot).addEventListener('slotchange', this.#updateItemButtons.bind(this));
+        const children = this.findElement<HTMLSlotElement>(EditableListPart.ItemsSlot).assignedElements();
+        if(children.length == 0)
+        {
+            this.classList.add('empty');
+            this.part.add('empty');
+        }
+        else
+        {
+            this.classList.remove('empty');
+            this.part.remove('empty');
+        }
         
     }
     #applyPartAttributes()
@@ -180,7 +187,17 @@ export class EditableListElement extends HTMLElement
      */
     #updateItemButtons()
     {
-        const children = this.getElement<HTMLSlotElement>(EditableListPart.ItemsSlot).assignedElements();
+        const children = this.findElement<HTMLSlotElement>(EditableListPart.ItemsSlot).assignedElements();
+        if(children.length == 0)
+        {
+            this.classList.add('empty');
+            this.part.add('empty');
+        }
+        else
+        {
+            this.classList.remove('empty');
+            this.part.remove('empty');
+        }
         for(let i = 0; i < children.length; i++)
         {
             const target = children[i];
@@ -264,6 +281,7 @@ export class EditableListElement extends HTMLElement
     static observedAttributes = [
         'remove',
         'edit',
+        'placeholder',
     ];
     /**
      * Update items to new configuration when attributes change
@@ -296,6 +314,10 @@ export class EditableListElement extends HTMLElement
                 this.canEdit = true;
             }
             this.#updateItemButtons();
+        }
+        else if(attributeName == "placeholder")
+        {
+            this.findElement('placeholder').textContent = newValue;
         }
     }
 }
