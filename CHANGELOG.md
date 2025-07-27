@@ -1,5 +1,11 @@
 # @magnit-ce/editable-list
 
+## 0.1.0
+
+### Minor Changes
+
+- bb12ff1: added placeholder attribute
+
 ## 0.0.11
 
 ### Patch Changes
