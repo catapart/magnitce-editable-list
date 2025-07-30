@@ -1,5 +1,11 @@
 # @magnit-ce/editable-list
 
+## 0.1.2
+
+### Patch Changes
+
+- 7823a97: fixed issue with template preventing empty state
+
 ## 0.1.1
 
 ### Patch Changes
