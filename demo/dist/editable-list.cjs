@@ -120,16 +120,6 @@ var EditableListElement = class extends HTMLElement {
       this.part.remove("empty");
     }
   }
-  #applyPartAttributes() {
-    const identifiedElements = [...this.shadowRoot.querySelectorAll("[id]")];
-    for (let i = 0; i < identifiedElements.length; i++) {
-      identifiedElements[i].part.add(identifiedElements[i].id);
-    }
-    const classedElements = [...this.shadowRoot.querySelectorAll("[class]")];
-    for (let i = 0; i < classedElements.length; i++) {
-      classedElements[i].part.add(...classedElements[i].classList);
-    }
-  }
   /**
    * Create a new instance of an `EditableListElement` element using the provided properties to define the configuration.
    * @param props target `EditableListProperties` values
@@ -163,7 +153,7 @@ var EditableListElement = class extends HTMLElement {
    */
   #updateItemButtons() {
     const children = this.findElement("items-slot" /* ItemsSlot */).assignedElements();
-    if (children.length == 0) {
+    if (children.length == 0 || children.every((item) => item instanceof HTMLTemplateElement)) {
       this.classList.add("empty");
       this.part.add("empty");
     } else {
