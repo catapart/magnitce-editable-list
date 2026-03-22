@@ -2,41 +2,43 @@
   "name": "@magnit-ce/editable-list",
   "version": "0.0.10",
   "description": "A custom html element that adds a remove button to its children and removes the child when the button is pressed",
-  "main": "dist/editable-list.js",
+  "main": "dist/editable-list.umd.js",
   "module": "dist/editable-list.js",
   "types": "dist/editable-list.d.ts",
+  "type": "module",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup editable-list.ts --format esm --dts --clean",
-    "minify": "tsup editable-list.ts --format esm --config ./tsup.config.min.ts --outDir ./dist --minify",
-    "copyToDemo": "node -e \"const fs = require('fs'); fs.cpSync('dist', 'demo/dist', {recursive: true});\"",
-    "lint": "tsup editable-list.ts --format esm --tsconfig ./tsconfig.lint.json",
-    "package": "npm run build && npm run minify && npm run copyToDemo",
-    "release": "npm run package && changeset publish"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "build-tests": "vite build --config vite.config.tests.ts",
+    "changeset": "npx @changesets/cli",
+    "release": "npm run build && npx @changesets/cli publish"
   },
   "keywords": [
     "custom",
     "element",
     "html",
     "browser",
-    "component",
     "list",
     "edit"
   ],
+  "devDependencies": {
+    "@changesets/cli": "^2.27.7",
+    "@magnit-ce/test-runner": "^0.0.8",
+    "@rollup/plugin-terser": "^1.0.0",
+    "changesets": "^1.0.2",
+    "glob": "^13.0.0",
+    "typescript": "^5.5.3",
+    "vite": "^8.0.0",
+    "vite-plugin-dts": "^4.5.4"
+  },
   "author": "catapart",
   "license": "CC0-1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/catapart/magnitce-editable-list"
-  },
-  "devDependencies": {
-    "@changesets/cli": "^2.27.7",
-    "changesets": "^1.0.2",
-    "minify": "^11.4.0",
-    "terser": "^5.31.3",
-    "tsup": "^8.2.0",
-    "typescript": "^5.5.3"
   }
 }

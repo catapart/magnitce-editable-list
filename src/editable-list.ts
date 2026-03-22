@@ -12,20 +12,25 @@ export type EditableListProperties = EditableListAttributes &
     onEdit?: (event?: Event) => void|Promise<void>;
 };
 /** `part` attribute values for querying and selecting `shadowRoot` elements in the `editable-list` component */
-export enum EditableListPart
+export const EditableListPart =
 {
-    Items = "items",
-    AddButton = "add",
-    ItemsSlot = "items-slot",
-    EditButton = "edit",
-    RemoveButton = "remove",
-}
+    Items: "items",
+    AddButton: "add",
+    ItemsSlot: "items-slot",
+    EditButton: "edit",
+    RemoveButton: "remove",
+} as const;
+/** `part` attribute values for querying and selecting `shadowRoot` elements in the `editable-list` component */
+export type EditableListPartType = typeof EditableListPart[keyof typeof EditableListPart];
+
 /** `part` attribute values for assigning remove button and edit button templates */
-export enum ButtonTemplatePart
+export const ButtonTemplatePart =
 {
-    RemoveButton = "remove-button",
-    EditButton = "edit-button",
-}
+    RemoveButton: "remove-button",
+    EditButton: "edit-button",
+} as const;
+/** `part` attribute values for assigning remove button and edit button templates */
+export type ButtonTemplatePartType = typeof ButtonTemplatePart[keyof typeof ButtonTemplatePart];
 
 /** `HTMLElement tags that are not managed by the `editable-list` element */
 const IGNORED_TAGS = new Set([
@@ -117,7 +122,7 @@ export class EditableListElement extends HTMLElement
             const part = button.getAttribute('part');
             if(part == 'edit')
             {
-                const result = this.dispatchEvent(new CustomEvent('edit', { detail: item, bubbles: true }));
+                this.dispatchEvent(new CustomEvent('edit', { detail: item, bubbles: true }));
                 if(this.hasAttribute("cancel-edit"))
                 {
                     event.preventDefault();

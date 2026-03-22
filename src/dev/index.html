@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        html {
+            color-scheme: light dark;
+        }
+
+        body {
+            display: grid;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <test-runner>
+
+        <editable-list remove="false" edit="true">
+            <li>A</li>
+            <li>B</li>
+            <li>C</li>
+            <li>D</li> <button type="button" slot="add">Add</button> <template part="remove-button">Close</template> <template part="edit-button">Browse</template>
+        </editable-list>
+    </test-runner>
+
+    <script type="module" src="./dev.ts"></script>
+</body>
+
+</html>
